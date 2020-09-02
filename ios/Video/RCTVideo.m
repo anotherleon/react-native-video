@@ -1608,9 +1608,14 @@ static int const RCTVideoUnset = -1;
   _player = nil;
   
   [self removePlayerLayer];
-  
-  [_playerViewController.contentOverlayView removeObserver:self forKeyPath:@"frame"];
-  [_playerViewController removeObserver:self forKeyPath:readyForDisplayKeyPath];
+    // fix potential crash
+    @try{
+        [_playerViewController.contentOverlayView removeObserver:self forKeyPath:@"frame"];
+        [_playerViewController removeObserver:self forKeyPath:readyForDisplayKeyPath];
+    }@catch(id anException){
+        NSLog(@"Failed to remove _playerViewController KVOs: %@", anException);
+    }
+    
   [_playerViewController.view removeFromSuperview];
   _playerViewController.rctDelegate = nil;
   _playerViewController.player = nil;
